@@ -3,17 +3,20 @@ import { Column } from 'primereact/column'
 import { Button } from 'primereact/button'
 
 import { useEffect, useState } from 'react'
-import { collection, onSnapshot, query, where, deleteDoc, doc } from 'firebase/firestore'
+import { collection, onSnapshot, query, where, deleteDoc, doc, orderBy, Timestamp, addDoc } from 'firebase/firestore'
 import { db } from '../firebase'
+
 import { useRecoilState } from 'recoil'
 import { userState } from '../atom/userAtom'
+import { recordsState } from '../atom/recordsAtom'
 
-const FitnessDataTable = () => {
+const FitnessDataTable = ({ demoRecords }) => {
   const [currentUser, setCurrentUser] = useRecoilState(userState)
-  const [records, setRecords] = useState([])
+  const [records, setRecords] = useRecoilState(recordsState)
 
   useEffect(() => {
     if (currentUser) {
+      let _records = []
       const unsub = onSnapshot(query(collection(db, 'records'), where('username', '==', currentUser.username)), collection => {
         //since the snapshot doesn't get the id of each doc, ids needs to be collected in another way
         //I had to get ids to be able to delete single docs from the collection
@@ -27,12 +30,27 @@ const FitnessDataTable = () => {
         //build an array of objects containing the db data
         let recordsData = recordsCollection.map(record => record.data())
 
+        //I still need to understand how to order by date from Firestore so I ordered records manually
+        _records = recordsData.sort((a, b) => new Date(a.recordDate.toDate()).getTime() - new Date(b.recordDate.toDate()).getTime())
+
         //build an alternative array chaining ids and data
-        const _records = recordsData.map((record, i) => {
-          return { ...record, id: ids[i] }
+        _records = recordsData.map((record, i) => {
+          return { ...record, id: ids[i], recordDate: record.recordDate.toDate().toLocaleDateString('it-IT') }
         })
         setRecords(_records)
       })
+      // if (_records.length === 0) {
+      //   demoRecords.forEach(async record => {
+      //     console.log(Timestamp.fromDate(new Date(record.recordDate)))
+      //     await addDoc(collection(db, 'records'), {
+      //       ...record,
+      //       recordDate: Timestamp.fromDate(new Date(record.recordDate)),
+      //     })
+      //   })
+
+      //   setRecords(demoRecords)
+      //   // console.log(demoRecords)
+      // }
     }
   }, [currentUser])
 
@@ -50,6 +68,7 @@ const FitnessDataTable = () => {
         key={col.field}
         field={col.field}
         header={col.header}
+        sortable
       />
     )
   })
@@ -76,7 +95,11 @@ const FitnessDataTable = () => {
   }
 
   return (
-    <DataTable value={records}>
+    <DataTable
+      value={records}
+      sortField="recordDate"
+      sortOrder={-1}
+    >
       {dynamicColumns}
       <Column
         body={actionBodyTemplate}

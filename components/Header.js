@@ -34,15 +34,16 @@ export default function Header() {
   function onSignOut() {
     signOut(auth)
     setCurrentUser(null)
+    router.reload()
   }
 
   return (
     <div className="shadow-sm border-b sticky top-0 bg-white z-30">
       <div className="flex items-center justify-between max-w-6xl mx-4 xl:mx-auto">
         {/* Left */}
-        <div className="cursor-pointer h-24 w-24 relative hidden lg:inline-grid">
+        <div className="cursor-pointer h-24 w-52                                            relative hidden lg:inline-grid">
           <Image
-            src="http://www.jennexplores.com/wp-content/uploads/2015/09/Instagram_logo_black.png"
+            src="/fitness tracker logo.svg"
             layout="fill"
             className="object-contain"
           />

@@ -1,0 +1,42 @@
+
+{
+  "data": [
+    {
+      "fatPercentage": 21.7,
+      "weight": 89.2,
+      "recordDate": "8/31/2022",
+      "waterPercentage": 55.6,
+      "username": "roberto.cinetto@gmail.com",
+      "bmi": 28.2,
+      "id": "Fj8xAQJgDgbSYHgC6AZY"
+    },
+    {
+      "fatPercentage": 22.5,
+      "recordDate": "9/7/2022",
+      "waterPercentage": 54.9,
+      "bmi": 27.9,
+      "weight": 88.5,
+      "username": "roberto.cinetto@gmail.com",
+      "id": "NPEwldFlIn1HgngB5I9C"
+    },
+    {
+      "bmi": 28.1,
+      "waterPercentage": 53.6,
+      "recordDate": "9/14/2022",
+      "fatPercentage": 24.1,
+      "weight": 89,
+      "username": "roberto.cinetto@gmail.com",
+      "id": "bbY5UP5bhF8NzYwWzoPY"
+    },
+    {
+      "recordDate": "9/20/2022",
+      "weight": 88.1,
+      "bmi": 27.8,
+      "fatPercentage": 23.4,
+      "waterPercentage": 54.2,
+      "username": "roberto.cinetto@gmail.com",
+      "id": "oh9LjINz9C9F5HxJtQwu"
+    }
+  ]
+}
+   
