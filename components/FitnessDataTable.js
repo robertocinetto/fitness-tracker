@@ -33,7 +33,7 @@ const FitnessDataTable = ({ demoRecords }) => {
         let recordsData = recordsCollection.map(record => record.data())
 
         //I still need to understand how to order by date from Firestore so I ordered records manually
-        _records = recordsData.sort((a, b) => new Date(a.recordDate.toDate()).getTime() - new Date(b.recordDate.toDate()).getTime())
+        // _records = recordsData.sort((a, b) => new Date(a.recordDate.toDate()).getTime() - new Date(b.recordDate.toDate()).getTime())
 
         //build an alternative array chaining ids and data
         _records = recordsData.map((record, i) => {
@@ -95,9 +95,10 @@ const FitnessDataTable = ({ demoRecords }) => {
 
   const confirmDeleteProduct = async rowData => {
     try {
-      await deleteDoc(doc(db, 'records', rowData.id))
-      showSuccessDeletion()
-    } catch (error) {}
+      await deleteDoc(doc(db, 'records', rowData.id)).then(showSuccessDeletion())
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   const dateBodyTemplate = rowData => {
