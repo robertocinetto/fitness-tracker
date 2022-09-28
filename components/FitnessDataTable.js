@@ -1,8 +1,9 @@
 import { DataTable } from 'primereact/datatable'
 import { Column } from 'primereact/column'
 import { Button } from 'primereact/button'
+import { Toast } from 'primereact/toast'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { collection, onSnapshot, query, where, deleteDoc, doc, orderBy, Timestamp, addDoc } from 'firebase/firestore'
 import { db } from '../firebase'
 
@@ -13,6 +14,7 @@ import { recordsState } from '../atom/recordsAtom'
 const FitnessDataTable = ({ demoRecords }) => {
   const [currentUser, setCurrentUser] = useRecoilState(userState)
   const [records, setRecords] = useRecoilState(recordsState)
+  const toast = useRef(null)
 
   useEffect(() => {
     if (currentUser) {
@@ -35,7 +37,8 @@ const FitnessDataTable = ({ demoRecords }) => {
 
         //build an alternative array chaining ids and data
         _records = recordsData.map((record, i) => {
-          return { ...record, id: ids[i], recordDate: record.recordDate.toDate().toLocaleDateString('it-IT') }
+          // return { ...record, id: ids[i], recordDate: record.recordDate.toDate().toLocaleDateString('en-US') }
+          return { ...record, id: ids[i] }
         })
         setRecords(_records)
       })
@@ -55,7 +58,7 @@ const FitnessDataTable = ({ demoRecords }) => {
   }, [currentUser])
 
   const columns = [
-    { field: 'recordDate', header: 'Date' },
+    // { field: 'recordDate', header: 'Date' },
     { field: 'weight', header: 'Weight' },
     { field: 'bmi', header: 'BMI' },
     { field: 'fatPercentage', header: 'Fat %' },
@@ -91,21 +94,49 @@ const FitnessDataTable = ({ demoRecords }) => {
   }
 
   const confirmDeleteProduct = async rowData => {
-    await deleteDoc(doc(db, 'records', rowData.id))
+    try {
+      await deleteDoc(doc(db, 'records', rowData.id))
+      showSuccessDeletion()
+    } catch (error) {}
+  }
+
+  const dateBodyTemplate = rowData => {
+    return formatDate(rowData.recordDate)
+  }
+  const formatDate = value => {
+    return value.toDate().toLocaleDateString('it-IT', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+    })
+  }
+
+  const showSuccessDeletion = () => {
+    toast.current.show({ severity: 'info', summary: 'Deleted', detail: 'Entry has been deleted', life: 3000 })
   }
 
   return (
-    <DataTable
-      value={records}
-      sortField="recordDate"
-      sortOrder={-1}
-    >
-      {dynamicColumns}
-      <Column
-        body={actionBodyTemplate}
-        exportable={false}
-      ></Column>
-    </DataTable>
+    <>
+      <Toast ref={toast} />
+      <DataTable
+        value={records}
+        sortField="recordDate"
+        sortOrder={-1}
+      >
+        <Column
+          field="recordDate"
+          header="Date"
+          dataType="date"
+          sortable
+          body={dateBodyTemplate}
+        />
+        {dynamicColumns}
+        <Column
+          body={actionBodyTemplate}
+          exportable={false}
+        />
+      </DataTable>
+    </>
   )
 }
 

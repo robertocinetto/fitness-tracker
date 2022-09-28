@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { InputNumber } from 'primereact/inputnumber'
-import { InputText } from 'primereact/inputtext'
 import { Button } from 'primereact/button'
 import { Calendar } from 'primereact/calendar'
+import { Toast } from 'primereact/toast'
 
 import { collection, addDoc, getDocs, onSnapshot, doc, Timestamp } from 'firebase/firestore'
 import { db } from '../firebase'
@@ -17,9 +17,10 @@ const BodyCompositionForm = () => {
   const [bmi, setBMI] = useState()
   const [fatPercentage, setFatPercentage] = useState()
   const [waterPercentage, setWaterPercentage] = useState()
+  const toast = useRef(null)
 
-  async function submitFormData() {
-    console.log(recordDate)
+  async function submitFormData(e) {
+    e.preventDefault()
     try {
       await addDoc(collection(db, 'records'), {
         recordDate: recordDate,
@@ -35,15 +36,21 @@ const BodyCompositionForm = () => {
       setBMI(null)
       setFatPercentage(null)
       setWaterPercentage(null)
+      showSuccess()
     } catch (e) {
       console.log(e)
     }
+  }
+
+  const showSuccess = () => {
+    toast.current.show({ severity: 'success', summary: 'Confirmed!', detail: 'Your new entry has been added successfully', life: 3000 })
   }
 
   return (
     <>
       {currentUser ? (
         <form onSubmit={submitFormData}>
+          <Toast ref={toast} />
           <div className="flex gap-2">
             <div className="p-float-label w-full md:w-1/5">
               <Calendar
@@ -54,6 +61,7 @@ const BodyCompositionForm = () => {
                 dateFormat="dd/mm/yy"
                 touchUI
                 required
+                readOnlyInput
               />
 
               <label htmlFor="date">Date (gg/mm/yyyy)</label>
