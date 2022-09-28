@@ -14,11 +14,13 @@ const FitnessDataTable = () => {
     if (currentUser) {
       const unsub = onSnapshot(query(collection(db, 'records'), where('username', '==', currentUser.username)), collection => {
         setRecords(collection.docs.map(record => record.data()))
+        // console.log(collection.docs.map(record => record.data()))
       })
     }
   }, [currentUser])
 
   const columns = [
+    { field: 'recordDate', header: 'Date' },
     { field: 'weight', header: 'Weight' },
     { field: 'bmi', header: 'BMI' },
     { field: 'fatPercentage', header: 'Fat %' },
