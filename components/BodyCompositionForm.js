@@ -19,7 +19,6 @@ export const BodyCompositionForm = () => {
   const [waterPercentage, setWaterPercentage] = useState()
 
   async function submitFormData() {
-    console.log(recordDate)
     try {
       await addDoc(collection(db, 'records'), {
         recordDate: recordDate,
@@ -29,6 +28,12 @@ export const BodyCompositionForm = () => {
         waterPercentage: waterPercentage,
         username: currentUser.username,
       })
+
+      setRecordDate(null)
+      setWeight(null)
+      setBMI(null)
+      setFatPercentage(null)
+      setWaterPercentage(null)
     } catch (e) {
       console.log(e)
     }
