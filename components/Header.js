@@ -10,14 +10,18 @@ import { InputSwitch } from 'primereact/inputswitch'
 import { userState } from '../atom/userAtom'
 import { themeState } from '../atom/themeAtom'
 import { useRecoilState } from 'recoil'
-import { useEffect, useState } from 'react'
+import { useEffect, useLayoutEffect, useState } from 'react'
 import { useRouter } from 'next/router'
+
+import { useTheme } from 'next-themes'
 
 export default function Header() {
   const [currentUser, setCurrentUser] = useRecoilState(userState)
-  const [darkTheme, setDarkTheme] = useRecoilState(themeState)
   const router = useRouter()
   const auth = getAuth()
+
+  const { theme, setTheme } = useTheme()
+  const [switchState, setSwitchState] = useState()
 
   useEffect(() => {
     onAuthStateChanged(auth, user => {
@@ -32,7 +36,23 @@ export default function Header() {
         fetchUser()
       }
     })
+
+    if (localStorage.theme === 'dark') {
+      setSwitchState(true)
+    } else if (localStorage.theme === 'light') {
+      setSwitchState(false)
+    }
   }, [])
+
+  const toggleTheme = e => {
+    if (e.value) {
+      setSwitchState(true)
+      setTheme('dark')
+    } else {
+      setSwitchState(false)
+      setTheme('light')
+    }
+  }
 
   function onSignOut() {
     signOut(auth)
@@ -46,7 +66,7 @@ export default function Header() {
         {/* Left */}
         <div className="cursor-pointer h-24 w-52 relative ">
           <Image
-            src={`${darkTheme ? '/fitness tracker logo white.svg' : '/fitness tracker logo.svg'}`}
+            src={`${theme === 'dark' ? '/fitness tracker logo white.svg' : '/fitness tracker logo.svg'}`}
             layout="fill"
             className="object-contain"
           />
@@ -83,8 +103,8 @@ export default function Header() {
               />
 
               <InputSwitch
-                checked={darkTheme}
-                onChange={e => setDarkTheme(e.value)}
+                checked={switchState}
+                onChange={toggleTheme}
               />
             </>
           ) : (

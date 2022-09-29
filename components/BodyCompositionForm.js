@@ -1,17 +1,17 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useRef } from 'react'
 import { InputNumber } from 'primereact/inputnumber'
 import { Button } from 'primereact/button'
 import { Calendar } from 'primereact/calendar'
 import { Toast } from 'primereact/toast'
 
-import { collection, addDoc, getDocs, onSnapshot, doc, Timestamp } from 'firebase/firestore'
+import { collection, addDoc, Timestamp } from 'firebase/firestore'
 import { db } from '../firebase'
 
 import { useRecoilState } from 'recoil'
 import { userState } from '../atom/userAtom'
 
 const BodyCompositionForm = () => {
-  const [currentUser, setCurrentUser] = useRecoilState(userState)
+  const [currentUser] = useRecoilState(userState)
   const [recordDate, setRecordDate] = useState()
   const [weight, setWeight] = useState()
   const [bmi, setBMI] = useState()

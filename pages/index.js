@@ -1,12 +1,8 @@
 import Layout from '../components/Layout'
-import { themeState } from '../atom/themeAtom'
-import { useRecoilState } from 'recoil'
 
 const Home = ({ demoRecords }) => {
-  const [theme, setTheme] = useRecoilState(themeState)
-
   return (
-    <div className={`${theme ? 'dark' : 'light'}`}>
+    <div>
       <Layout demoRecords={demoRecords} />
     </div>
   )
