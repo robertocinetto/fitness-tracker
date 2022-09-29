@@ -10,7 +10,13 @@ const Graphs = () => {
 
   useEffect(() => {
     setGraphData({
-      labels: records.map(record => record.recordDate.toDate().toLocaleDateString('en-US')),
+      labels: records.map(record =>
+        record.recordDate.toDate().toLocaleDateString('en-US', {
+          day: 'numeric',
+          month: 'numeric',
+          year: '2-digit',
+        })
+      ),
       datasets: [
         {
           label: 'Weight',

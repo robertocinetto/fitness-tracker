@@ -1,7 +1,15 @@
 import Layout from '../components/Layout'
+import { themeState } from '../atom/themeAtom'
+import { useRecoilState } from 'recoil'
 
 const Home = ({ demoRecords }) => {
-  return <Layout demoRecords={demoRecords} />
+  const [theme, setTheme] = useRecoilState(themeState)
+
+  return (
+    <div className={`${theme ? 'dark' : 'light'}`}>
+      <Layout demoRecords={demoRecords} />
+    </div>
+  )
 }
 
 import fsPromises from 'fs/promises'

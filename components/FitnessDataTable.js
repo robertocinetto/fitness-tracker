@@ -120,9 +120,11 @@ const FitnessDataTable = ({ demoRecords }) => {
     <>
       <Toast ref={toast} />
       <DataTable
+        size="small"
         value={records}
         sortField="recordDate"
         sortOrder={-1}
+        responsiveLayout="scroll"
       >
         <Column
           field="recordDate"

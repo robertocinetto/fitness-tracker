@@ -7,13 +7,13 @@ import Header from './Header'
 
 const Layout = ({ children, demoRecords }) => {
   return (
-    <div>
+    <div className="bg-white dark:bg-slate-800 dark:text-slate-100 dark:dark-theme">
       <Header />
 
-      <div className="max-w-7xl mx-auto py-10 px-5">
+      <div className="max-w-7xl mx-auto pt-10 px-5 ">
         <BodyCompositionForm />
       </div>
-      <div className="max-w-7xl mx-auto py-10 px-5">
+      <div className="max-w-7xl mx-auto py-10 px-5 card">
         <FitnessDataTable demoRecords={demoRecords} />
       </div>
       <div className="max-w-7xl mx-auto py-10 px-5">

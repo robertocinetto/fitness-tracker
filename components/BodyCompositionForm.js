@@ -51,7 +51,7 @@ const BodyCompositionForm = () => {
       {currentUser ? (
         <form onSubmit={submitFormData}>
           <Toast ref={toast} />
-          <div className="flex gap-2">
+          <div className="flex gap-2 flex-wrap md:flex-nowrap p-fluid">
             <div className="p-float-label w-full md:w-1/5">
               <Calendar
                 className="w-full"
@@ -119,7 +119,7 @@ const BodyCompositionForm = () => {
               />
               <label htmlFor="water_percentage">Water %</label>
             </div>
-            <div className="">
+            <div className="w-full md:w-1/5">
               <Button
                 type="submit"
                 label="Submit"
