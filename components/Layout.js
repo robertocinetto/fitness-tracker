@@ -8,7 +8,9 @@ import Header from './Header'
 const Layout = ({ children, demoRecords }) => {
   return (
     <div className="bg-white dark:bg-slate-800 dark:text-slate-100 dark:dark-theme">
-      <Header />
+      <div className="shadow-sm border-b sticky top-0 z-30 bg-white dark:bg-slate-900 dark:border-slate-800 ">
+        <Header />
+      </div>
 
       <div className="max-w-7xl mx-auto pt-10 px-5 ">
         <BodyCompositionForm />
