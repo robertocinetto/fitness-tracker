@@ -1,16 +1,16 @@
-import { getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signOut } from 'firebase/auth'
+import { getAuth, onAuthStateChanged, signOut } from 'firebase/auth'
 import { db } from '../firebase'
-import { doc, getDoc, serverTimestamp, setDoc } from 'firebase/firestore'
+import { doc, getDoc } from 'firebase/firestore'
 
 import Image from 'next/image'
-import { SearchIcon, PlusCircleIcon } from '@heroicons/react/outline'
-import { HomeIcon } from '@heroicons/react/solid'
-import { InputSwitch } from 'primereact/inputswitch'
+import { ProgressBar } from 'primereact/progressbar'
+import { DarkModeSwitch } from 'react-toggle-dark-mode'
+import { Menu } from 'primereact/menu'
+import { Button } from 'primereact/button'
 
 import { userState } from '../atom/userAtom'
-import { themeState } from '../atom/themeAtom'
 import { useRecoilState } from 'recoil'
-import { useEffect, useLayoutEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/router'
 
 import { useTheme } from 'next-themes'
@@ -22,6 +22,8 @@ export default function Header() {
 
   const { resolvedTheme, theme, setTheme } = useTheme()
   const [switchState, setSwitchState] = useState()
+
+  const menu = useRef(null)
 
   useEffect(() => {
     onAuthStateChanged(auth, user => {
@@ -44,8 +46,9 @@ export default function Header() {
     }
   }, [resolvedTheme])
 
-  const toggleTheme = e => {
-    if (e.value) {
+  const toggleTheme = checked => {
+    console.log(checked)
+    if (checked) {
       setSwitchState(true)
       setTheme('dark')
     } else {
@@ -54,11 +57,54 @@ export default function Header() {
     }
   }
 
-  function onSignOut() {
+  const resetDarkMode = () => {
+    setTheme('system')
+  }
+
+  const onSignOut = () => {
     signOut(auth)
     setCurrentUser(null)
     router.reload()
   }
+
+  const items = [
+    {
+      label: 'Options',
+      items: [
+        {
+          label: 'Reset dark mode',
+          icon: 'pi pi-refresh',
+          command: () => {
+            resetDarkMode()
+          },
+        },
+        {
+          label: 'Log out',
+          icon: 'pi pi-power-off',
+          command: () => {
+            onSignOut()
+          },
+        },
+      ],
+    },
+    // {
+    //   label: 'Navigate',
+    //   items: [
+    //     {
+    //       label: 'React Website',
+    //       icon: 'pi pi-external-link',
+    //       url: 'https://reactjs.org/',
+    //     },
+    //     {
+    //       label: 'Router',
+    //       icon: 'pi pi-upload',
+    //       command: e => {
+    //         window.location.hash = '/fileupload'
+    //       },
+    //     },
+    //   ],
+    // },
+  ]
 
   return (
     <div className="max-w-7xl xl:mx-auto px-5">
@@ -101,10 +147,24 @@ export default function Header() {
                 className="h-10 rounded-full cursor-pointer"
                 onClick={onSignOut}
               />
-
-              <InputSwitch
+              <DarkModeSwitch
                 checked={switchState}
                 onChange={toggleTheme}
+                size={30}
+              />
+              <Menu
+                model={items}
+                popup
+                ref={menu}
+                id="popup_menu"
+              />
+              <Button
+                className="p-button-rounded p-button-text p-button-sm p-button-plain"
+                aria-label="Settings"
+                icon="pi pi-cog"
+                onClick={event => menu.current.toggle(event)}
+                aria-controls="popup_menu"
+                aria-haspopup
               />
             </>
           ) : (
