@@ -20,7 +20,7 @@ export default function Header() {
   const router = useRouter()
   const auth = getAuth()
 
-  const { theme, setTheme } = useTheme()
+  const { resolvedTheme, theme, setTheme } = useTheme()
   const [switchState, setSwitchState] = useState()
 
   useEffect(() => {
@@ -37,12 +37,12 @@ export default function Header() {
       }
     })
 
-    if (localStorage.theme === 'dark') {
+    if (localStorage.theme === 'dark' || resolvedTheme === 'dark') {
       setSwitchState(true)
-    } else if (localStorage.theme === 'light') {
+    } else if (localStorage.theme === 'light' || resolvedTheme === 'light') {
       setSwitchState(false)
     }
-  }, [])
+  }, [resolvedTheme])
 
   const toggleTheme = e => {
     if (e.value) {
@@ -66,7 +66,7 @@ export default function Header() {
         {/* Left */}
         <div className="cursor-pointer h-24 w-52 relative ">
           <Image
-            src={`${theme === 'dark' ? '/fitness tracker logo white.svg' : '/fitness tracker logo.svg'}`}
+            src={`${resolvedTheme === 'dark' ? '/fitness tracker logo white.svg' : '/fitness tracker logo.svg'}`}
             layout="fill"
             className="object-contain"
           />
