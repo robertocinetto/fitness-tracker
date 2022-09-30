@@ -110,7 +110,7 @@ export default function Header() {
     <div className="max-w-7xl xl:mx-auto px-5">
       <div className="flex items-center justify-between ">
         {/* Left */}
-        <div className="cursor-pointer h-24 w-52 relative ">
+        <div className="cursor-pointer h-24 w-44 lg:w-52 relative ">
           <Image
             src={`${resolvedTheme === 'dark' ? '/fitness tracker logo white.svg' : '/fitness tracker logo.svg'}`}
             layout="fill"
@@ -133,7 +133,7 @@ export default function Header() {
 
         {/* Right */}
 
-        <div className="flex space-x-4 items-center">
+        <div className="flex items-center">
           {/* <HomeIcon className="hidden md:inline-flex  h-6 cursor-pointer hover:scale-125 transition-tranform duration-200 ease-out" /> */}
           {currentUser ? (
             <>
@@ -144,27 +144,28 @@ export default function Header() {
               <img
                 src={currentUser.userImg}
                 alt="user-image"
-                className="h-10 rounded-full cursor-pointer"
+                className="h-9 rounded-full cursor-pointer"
                 onClick={onSignOut}
               />
               <DarkModeSwitch
+                className="ml-3"
                 checked={switchState}
                 onChange={toggleTheme}
                 size={30}
+              />
+              <Button
+                className="p-button-rounded p-button-text p-button-sm p-button-plain ml-2"
+                aria-label="Settings"
+                icon="pi pi-cog"
+                onClick={event => menu.current.toggle(event)}
+                aria-controls="popup_menu"
+                aria-haspopup
               />
               <Menu
                 model={items}
                 popup
                 ref={menu}
                 id="popup_menu"
-              />
-              <Button
-                className="p-button-rounded p-button-text p-button-sm p-button-plain"
-                aria-label="Settings"
-                icon="pi pi-cog"
-                onClick={event => menu.current.toggle(event)}
-                aria-controls="popup_menu"
-                aria-haspopup
               />
             </>
           ) : (

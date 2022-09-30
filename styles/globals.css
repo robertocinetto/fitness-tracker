@@ -68,7 +68,9 @@
 }
 
 .p-button.p-button-text.p-button-plain {
-  @apply text-slate-600
+  @apply text-slate-600;
+  height: 2rem;
+  width: 2rem;
 }
 .dark .p-button.p-button-text.p-button-plain {
   @apply text-slate-300
