@@ -1,12 +1,13 @@
-import { getAuth, onAuthStateChanged, signOut } from 'firebase/auth'
+import { getAuth, onAuthStateChanged, signOut, GoogleAuthProvider, signInWithPopup } from 'firebase/auth'
 import { db } from '../firebase'
-import { doc, getDoc } from 'firebase/firestore'
+import { doc, getDoc, serverTimestamp, setDoc } from 'firebase/firestore'
 
 import Image from 'next/image'
 import { ProgressBar } from 'primereact/progressbar'
 import { DarkModeSwitch } from 'react-toggle-dark-mode'
 import { Menu } from 'primereact/menu'
 import { Button } from 'primereact/button'
+import { Dialog } from 'primereact/dialog'
 
 import { userState } from '../atom/userAtom'
 import { useRecoilState } from 'recoil'
@@ -24,6 +25,8 @@ export default function Header() {
   const [switchState, setSwitchState] = useState()
 
   const menu = useRef(null)
+
+  const [popupVisible, setPopupVisible] = useState(false)
 
   useEffect(() => {
     onAuthStateChanged(auth, user => {
@@ -47,7 +50,6 @@ export default function Header() {
   }, [resolvedTheme])
 
   const toggleTheme = checked => {
-    console.log(checked)
     if (checked) {
       setSwitchState(true)
       setTheme('dark')
@@ -106,10 +108,33 @@ export default function Header() {
     // },
   ]
 
+  const displayPopup = () => setPopupVisible(curr => !curr)
+  async function onGoogleClick() {
+    try {
+      const auth = getAuth()
+      const provider = new GoogleAuthProvider()
+      await signInWithPopup(auth, provider)
+      const user = auth.currentUser.providerData[0]
+      const docRef = doc(db, 'users', user.uid)
+      const docSnap = await getDoc(docRef)
+      if (!docSnap.exists()) {
+        await setDoc(docRef, {
+          name: user.displayName,
+          email: user.email,
+          userImg: user.photoURL,
+          uid: user.uid,
+          timestamp: serverTimestamp(),
+          username: user.email,
+        })
+      }
+      displayPopup()
+    } catch (error) {
+      console.log(error)
+    }
+  }
   return (
     <div className="max-w-7xl xl:mx-auto px-5">
       <div className="flex items-center justify-between ">
-        {/* Left */}
         <div className="cursor-pointer h-24 w-44 lg:w-52 relative ">
           <Image
             src={`${resolvedTheme === 'dark' ? '/fitness tracker logo white.svg' : '/fitness tracker logo.svg'}`}
@@ -118,29 +143,9 @@ export default function Header() {
           />
         </div>
 
-        {/* Middle */}
-
-        {/* <div className="relative mt-1">
-          <div className="absolute top-2 left-2">
-            <SearchIcon className="h-5 text-gray-500" />
-          </div>
-          <input
-            type="text"
-            placeholder="Search"
-            className="bg-gray-50 pl-10 border-gray-500 text-sm focus:ring-black focus:border-black rounded-md"
-          />
-        </div> */}
-
-        {/* Right */}
-
         <div className="flex items-center">
-          {/* <HomeIcon className="hidden md:inline-flex  h-6 cursor-pointer hover:scale-125 transition-tranform duration-200 ease-out" /> */}
           {currentUser ? (
             <>
-              {/* <PlusCircleIcon
-                onClick={() => setOpen(true)}
-                className="h-6 cursor-pointer hover:scale-125 transition-tranform duration-200 ease-out"
-              /> */}
               <img
                 src={currentUser.userImg}
                 alt="user-image"
@@ -169,7 +174,45 @@ export default function Header() {
               />
             </>
           ) : (
-            <button onClick={() => router.push('/auth/signin')}>Sign in</button>
+            <>
+              <button onClick={displayPopup}>Sign in</button>
+              <Dialog
+                // header="Header"
+                visible={popupVisible}
+                style={{ width: '400px' }}
+                onHide={displayPopup}
+                draggable={false}
+                headerClassName="login-popup-header"
+                // breakpoints={{ '960px': '100vw', '640px': '100vw' }}
+                // style={{ width: '50vw' }}
+              >
+                <div className="text-center">
+                  <Image
+                    src={`${resolvedTheme === 'dark' ? '/fitness tracker logo white.svg' : '/fitness tracker logo.svg'}`}
+                    // layout="fill"
+                    className=""
+                    width={200}
+                    height={50}
+                  />
+                </div>
+                <h4 className="text-center">Login with</h4>
+                <Button
+                  className="google p-0 w-full flex justify-center mb-3"
+                  aria-label="Google"
+                  onClick={onGoogleClick}
+                >
+                  <i className="pi pi-google px-2"></i>
+                  <span className="px-3">Google</span>
+                </Button>
+                {/* <Button
+                  className="facebook p-0 w-full flex justify-center"
+                  aria-label="Facebook"
+                >
+                  <i className="pi pi-facebook px-2"></i>
+                  <span className="px-3">Facebook</span>
+                </Button> */}
+              </Dialog>
+            </>
           )}
         </div>
       </div>

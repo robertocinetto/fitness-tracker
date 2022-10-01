@@ -7,6 +7,31 @@
 @import "primeicons/primeicons.css";        
 /* @import 'primeflex/primeflex.css';  */
 
+@layer base {
+  h1, h2, h3, h4, h5, h6, p, a, li {
+    font-family: 'Cabin',sans-serif;
+  }
+  h1 {
+    @apply text-6xl mb-7;
+  }
+  h2 {
+    @apply text-4xl mb-5;
+  }
+  h3 {
+    @apply text-3xl mb-5;
+  }
+
+  h4 {
+    @apply text-xl mb-5;
+  }
+  p {
+    @apply mb-4;
+    font-weight: 400;
+  }
+}
+
+
+
 @layer utilities {
   .dark-theme input {
       @apply bg-slate-800 text-slate-300 border-slate-600;
@@ -74,4 +99,17 @@
 }
 .dark .p-button.p-button-text.p-button-plain {
   @apply text-slate-300
+}
+
+.p-dialog-header.login-popup-header {
+  margin-bottom: -30px;
+}
+
+.dark .p-dialog-header.login-popup-header {
+  margin-bottom: -30px;
+  @apply bg-slate-700
+}
+.dark .p-dialog .p-dialog-content {
+  @apply bg-slate-700;
+  color: white;
 }
