@@ -24,7 +24,7 @@ const Profile = () => {
   useEffect(() => {
     console.log('%cProfile rendered', 'color:orange')
     setFullName(currentUser?.name)
-    setBirthDate(currentUser?.birthDate.toDate())
+    setBirthDate(currentUser?.birthDate?.toDate())
     setHeight(currentUser?.height)
   }, [currentUser])
 
