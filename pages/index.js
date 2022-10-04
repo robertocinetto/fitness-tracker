@@ -1,9 +1,19 @@
-import Layout from '../components/Layout'
+import BodyCompositionForm from '../components/BodyCompositionForm'
+import FitnessDataTable from '../components/FitnessDataTable'
+import Graphs from '../components/Graphs'
 
 const Home = ({ demoRecords }) => {
   return (
     <div>
-      <Layout demoRecords={demoRecords} />
+      <div className="mt-10">
+        <BodyCompositionForm />
+      </div>
+      <div className="my-10 card">
+        <FitnessDataTable demoRecords={demoRecords} />
+      </div>
+      <div className="my-10">
+        <Graphs />
+      </div>
     </div>
   )
 }
