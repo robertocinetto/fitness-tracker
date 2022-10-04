@@ -9,6 +9,8 @@ const Graphs = () => {
   const [graphData, setGraphData] = useState({})
 
   useEffect(() => {
+    console.log('%cGraph rendered', 'color:orange')
+
     setGraphData({
       labels: records.map(record =>
         record.recordDate.toDate().toLocaleDateString('en-US', {
@@ -44,6 +46,41 @@ const Graphs = () => {
           data: records.map(record => record.waterPercentage),
           fill: false,
           borderColor: '#4266f5',
+          tension: 0.4,
+        },
+        {
+          label: 'Muscles',
+          data: records.map(record => record.musclesKg),
+          fill: false,
+          borderColor: '#f54242',
+          tension: 0.4,
+        },
+        {
+          label: 'CLASS',
+          data: records.map(record => record.classification),
+          fill: false,
+          borderColor: '#42f5ad',
+          tension: 0.4,
+        },
+        {
+          label: 'Bones',
+          data: records.map(record => record.bones),
+          fill: false,
+          borderColor: '#ad42f5',
+          tension: 0.4,
+        },
+        {
+          label: 'Daily kCal',
+          data: records.map(record => record.dailyKCal),
+          fill: false,
+          borderColor: '#f542b0',
+          tension: 0.4,
+        },
+        {
+          label: 'Belly Fat',
+          data: records.map(record => record.bellyFat),
+          fill: false,
+          borderColor: '#000000',
           tension: 0.4,
         },
       ],

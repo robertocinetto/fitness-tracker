@@ -57,7 +57,7 @@ const FitnessDataTable = ({ demoRecords }) => {
   })
 
   useEffect(() => {
-    console.log('%cTable rendered', 'orange')
+    console.log('%cTable rendered', 'color:orange')
     if (currentUser) {
       let _records = []
       const unsub = onSnapshot(query(collection(db, 'records'), where('username', '==', currentUser.username)), collection => {
@@ -81,6 +81,9 @@ const FitnessDataTable = ({ demoRecords }) => {
             bmi: (record.weight / ((currentUser.height * currentUser.height) / 10000)).toFixed(1),
           }
         })
+
+        _records = _records.slice().sort((a, b) => a.recordDate.seconds - b.recordDate.seconds)
+
         setRecords(_records)
       })
     }
@@ -186,12 +189,6 @@ const FitnessDataTable = ({ demoRecords }) => {
     }
   }
 
-  const numberEditorKg = options => {}
-
-  const numberEditorPercentage = options => {}
-
-  const numberEditor = options => {}
-
   const onRowEditComplete = async e => {
     let { newData } = e
     console.log(newData)
@@ -232,65 +229,6 @@ const FitnessDataTable = ({ demoRecords }) => {
           body={dateBodyTemplate}
         />
         {columnComponents}
-        {/* <Column
-          field="weight"
-          header="Weight"
-          sortable
-          editor={options => numberEditorKg(options)}
-        /> */}
-        {/* <Column
-          field="bmi"
-          header="BMI"
-          sortable
-        /> */}
-        {/* <Column
-          field="fatPercentage"
-          header="Fat %"
-          sortable
-          editor={options => numberEditorPercentage(options)}
-        /> */}
-        {/* <Column
-          field="waterPercentage"
-          header="Water %"
-          sortable
-          editor={options => numberEditorPercentage(options)}
-        /> */}
-        {/* <Column
-          field="musclesKg"
-          header="Muscles"
-          sortable
-          editor={options => numberEditorKg(options)}
-        /> */}
-        {/* <Column
-          field="classification"
-          header="CLASS"
-          sortable
-          editor={options => numberEditor(options)}
-        /> */}
-        {/* <Column
-          field="bones"
-          header="Bones"
-          sortable
-          editor={options => numberEditor(options)}
-        /> */}
-        {/* <Column
-          field="dailyKCal"
-          header="Daily KCal"
-          sortable
-          editor={options => numberEditor(options)}
-        /> */}
-        {/* <Column
-          field="age"
-          header="Age eq"
-          sortable
-          editor={options => numberEditor(options)}
-        /> */}
-        {/* <Column
-          field="bellyFat"
-          header="Belly Fat"
-          sortable
-          editor={options => numberEditor(options)}
-        /> */}
         <Column
           rowEditor
           headerStyle={{ width: '10%', minWidth: '8rem' }}
