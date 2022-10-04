@@ -52,9 +52,9 @@ const Profile = () => {
     e.preventDefault()
     try {
       await updateDoc(doc(db, 'users', currentUser.uid), {
-        birthDate,
-        height,
-        name: fullName,
+        birthDate: birthDate ? birthDate : null,
+        height: height ? height : null,
+        name: fullName ? fullName : null,
       }).then(showSuccess())
     } catch (e) {
       console.log(e)
