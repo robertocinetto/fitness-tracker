@@ -99,24 +99,6 @@ export default function Header() {
         },
       ],
     },
-
-    // {
-    //   label: 'Navigate',
-    //   items: [
-    //     {
-    //       label: 'React Website',
-    //       icon: 'pi pi-external-link',
-    //       url: 'https://reactjs.org/',
-    //     },
-    //     {
-    //       label: 'Router',
-    //       icon: 'pi pi-upload',
-    //       command: e => {
-    //         window.location.hash = '/fileupload'
-    //       },
-    //     },
-    //   ],
-    // },
   ]
 
   const displayPopup = () => setPopupVisible(curr => !curr)
@@ -144,7 +126,7 @@ export default function Header() {
     }
   }
   return (
-    <div className="max-w-7xl xl:mx-auto px-5">
+    <div className="max-w-screen-2xl xl:mx-auto px-5">
       <div className="flex items-center justify-between ">
         <div className="cursor-pointer h-24 w-44 lg:w-52 relative ">
           <Link href="/">

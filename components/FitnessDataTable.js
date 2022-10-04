@@ -4,6 +4,7 @@ import { Button } from 'primereact/button'
 import { Toast } from 'primereact/toast'
 import { InputText } from 'primereact/inputtext'
 import { InputNumber } from 'primereact/inputnumber'
+import { MultiSelect } from 'primereact/multiselect'
 
 import { useEffect, useRef, useState } from 'react'
 import { collection, onSnapshot, query, where, deleteDoc, doc, orderBy, Timestamp, addDoc, updateDoc } from 'firebase/firestore'
@@ -18,7 +19,45 @@ const FitnessDataTable = ({ demoRecords }) => {
   const [records, setRecords] = useRecoilState(recordsState)
   const toast = useRef(null)
 
+  const columns = [
+    { field: 'weight', header: 'Weight', editor: 'kg' },
+    { field: 'bmi', header: 'BMI' },
+    { field: 'fatPercentage', header: 'Fat %', editor: 'percentage' },
+    { field: 'waterPercentage', header: 'Water %', editor: 'percentage' },
+    { field: 'musclesKg', header: 'Muscles', editor: 'kg' },
+    { field: 'classification', header: 'CLASS', editor: 'int' },
+    { field: 'bones', header: 'Bones', editor: 'kg' },
+    { field: 'dailyKCal', header: 'Daily KCal', editor: 'int' },
+    { field: 'age', header: 'Age Eq', editor: 'int' },
+    { field: 'bellyFat', header: 'Belly Fat', editor: 'number' },
+  ]
+  const [selectedColumns, setSelectedColumns] = useState(columns)
+
+  const columnComponents = selectedColumns.map(col => {
+    if (col.editor) {
+      return (
+        <Column
+          key={col.field}
+          field={col.field}
+          header={col.header}
+          sortable
+          editor={options => selectEditor(col.editor, options)}
+        />
+      )
+    } else {
+      return (
+        <Column
+          key={col.field}
+          field={col.field}
+          header={col.header}
+          sortable
+        />
+      )
+    }
+  })
+
   useEffect(() => {
+    console.log('%cTable rendered', 'orange')
     if (currentUser) {
       let _records = []
       const unsub = onSnapshot(query(collection(db, 'records'), where('username', '==', currentUser.username)), collection => {
@@ -34,12 +73,8 @@ const FitnessDataTable = ({ demoRecords }) => {
         //build an array of objects containing the db data
         let recordsData = recordsCollection.map(record => record.data())
 
-        //I still need to understand how to order by date from Firestore so I ordered records manually
-        // _records = recordsData.sort((a, b) => new Date(a.recordDate.toDate()).getTime() - new Date(b.recordDate.toDate()).getTime())
-
         //build an alternative array chaining ids and data
         _records = recordsData.map((record, i) => {
-          // return { ...record, id: ids[i], recordDate: record.recordDate.toDate().toLocaleDateString('en-US') }
           return {
             ...record,
             id: ids[i],
@@ -48,20 +83,26 @@ const FitnessDataTable = ({ demoRecords }) => {
         })
         setRecords(_records)
       })
-      // if (_records.length === 0) {
-      //   demoRecords.forEach(async record => {
-      //     console.log(Timestamp.fromDate(new Date(record.recordDate)))
-      //     await addDoc(collection(db, 'records'), {
-      //       ...record,
-      //       recordDate: Timestamp.fromDate(new Date(record.recordDate)),
-      //     })
-      //   })
-
-      //   setRecords(demoRecords)
-      //   // console.log(demoRecords)
-      // }
     }
   }, [currentUser])
+
+  const onColumnToggle = event => {
+    let selectedColumns = event.value
+    let orderedSelectedColumns = columns.filter(col => selectedColumns.some(sCol => sCol.field === col.field))
+    setSelectedColumns(orderedSelectedColumns)
+  }
+
+  const header = (
+    <div style={{ textAlign: 'left' }}>
+      <MultiSelect
+        value={selectedColumns}
+        options={columns}
+        optionLabel="header"
+        onChange={onColumnToggle}
+        style={{ width: '20em' }}
+      />
+    </div>
+  )
 
   const actionBodyTemplate = rowData => {
     return (
@@ -86,6 +127,7 @@ const FitnessDataTable = ({ demoRecords }) => {
   const dateBodyTemplate = rowData => {
     return formatDate(rowData.recordDate)
   }
+
   const formatDate = value => {
     return value.toDate().toLocaleDateString('it-IT', {
       day: '2-digit',
@@ -102,40 +144,53 @@ const FitnessDataTable = ({ demoRecords }) => {
     toast.current.show({ severity: 'success', summary: 'Confirmed!', detail: 'Your new entry has been added successfully', life: 3000 })
   }
 
-  const numberEditorKg = options => {
-    return (
-      <InputNumber
-        minFractionDigits={1}
-        maxFractionDigits={1}
-        suffix=" kg"
-        value={options.value}
-        onChange={e => options.editorCallback(e.value)}
-      />
-    )
+  const selectEditor = (editor, options) => {
+    if (editor === 'kg') {
+      return (
+        <InputNumber
+          minFractionDigits={1}
+          maxFractionDigits={1}
+          suffix=" kg"
+          value={options.value}
+          onChange={e => options.editorCallback(e.value)}
+        />
+      )
+    } else if (editor === 'percentage') {
+      return (
+        <InputNumber
+          minFractionDigits={1}
+          maxFractionDigits={1}
+          suffix=" %"
+          value={options.value}
+          onChange={e => options.editorCallback(e.value)}
+        />
+      )
+    } else if (editor === 'int') {
+      return (
+        <InputNumber
+          // minFractionDigits={1}
+          // maxFractionDigits={1}
+          value={options.value}
+          onChange={e => options.editorCallback(e.value)}
+        />
+      )
+    } else {
+      return (
+        <InputNumber
+          minFractionDigits={1}
+          maxFractionDigits={1}
+          value={options.value}
+          onChange={e => options.editorCallback(e.value)}
+        />
+      )
+    }
   }
 
-  const numberEditorPercentage = options => {
-    return (
-      <InputNumber
-        minFractionDigits={1}
-        maxFractionDigits={1}
-        suffix=" %"
-        value={options.value}
-        onChange={e => options.editorCallback(e.value)}
-      />
-    )
-  }
+  const numberEditorKg = options => {}
 
-  const numberEditor = options => {
-    return (
-      <InputNumber
-        minFractionDigits={1}
-        maxFractionDigits={1}
-        value={options.value}
-        onChange={e => options.editorCallback(e.value)}
-      />
-    )
-  }
+  const numberEditorPercentage = options => {}
+
+  const numberEditor = options => {}
 
   const onRowEditComplete = async e => {
     let { newData } = e
@@ -143,9 +198,9 @@ const FitnessDataTable = ({ demoRecords }) => {
     await updateDoc(doc(db, 'records', newData.id), {
       // recordDate,
       weight: newData.weight,
-      musclesKg: newData.musclesKg,
       fatPercentage: newData.fatPercentage,
       waterPercentage: newData.waterPercentage,
+      musclesKg: newData.musclesKg,
       classification: newData.classification,
       bones: newData.bones,
       dailyKCal: newData.dailyKCal,
@@ -167,6 +222,7 @@ const FitnessDataTable = ({ demoRecords }) => {
         editMode="row"
         onRowEditComplete={onRowEditComplete}
         dataKey="id"
+        header={header}
       >
         <Column
           field="recordDate"
@@ -175,65 +231,66 @@ const FitnessDataTable = ({ demoRecords }) => {
           sortable
           body={dateBodyTemplate}
         />
-        <Column
+        {columnComponents}
+        {/* <Column
           field="weight"
           header="Weight"
           sortable
           editor={options => numberEditorKg(options)}
-        />
-        <Column
+        /> */}
+        {/* <Column
           field="bmi"
           header="BMI"
           sortable
-        />
-        <Column
+        /> */}
+        {/* <Column
           field="fatPercentage"
           header="Fat %"
           sortable
           editor={options => numberEditorPercentage(options)}
-        />
-        <Column
+        /> */}
+        {/* <Column
           field="waterPercentage"
           header="Water %"
           sortable
           editor={options => numberEditorPercentage(options)}
-        />
-        <Column
+        /> */}
+        {/* <Column
           field="musclesKg"
           header="Muscles"
           sortable
           editor={options => numberEditorKg(options)}
-        />
-        <Column
+        /> */}
+        {/* <Column
           field="classification"
           header="CLASS"
           sortable
           editor={options => numberEditor(options)}
-        />
-        <Column
+        /> */}
+        {/* <Column
           field="bones"
           header="Bones"
           sortable
           editor={options => numberEditor(options)}
-        />
-        <Column
+        /> */}
+        {/* <Column
           field="dailyKCal"
           header="Daily KCal"
           sortable
           editor={options => numberEditor(options)}
-        />
-        <Column
+        /> */}
+        {/* <Column
           field="age"
           header="Age eq"
           sortable
           editor={options => numberEditor(options)}
-        />
-        <Column
+        /> */}
+        {/* <Column
           field="bellyFat"
           header="Belly Fat"
           sortable
           editor={options => numberEditor(options)}
-        />
+        /> */}
         <Column
           rowEditor
           headerStyle={{ width: '10%', minWidth: '8rem' }}
