@@ -113,3 +113,19 @@
   @apply bg-slate-700;
   color: white;
 }
+
+.dark .p-fileupload-buttonbar,
+.dark .p-fileupload-content {
+  @apply bg-slate-700 border-slate-600;
+  color: white;
+}
+
+.p-fileupload.p-fileupload-advanced .p-button {
+  padding: 0.45rem 0.65rem;
+  font-size: 0.8rem;
+}
+
+.dark .p-chip {
+  @apply  bg-slate-700;
+  color: white;
+}

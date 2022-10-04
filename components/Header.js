@@ -8,6 +8,7 @@ import { DarkModeSwitch } from 'react-toggle-dark-mode'
 import { Menu } from 'primereact/menu'
 import { Button } from 'primereact/button'
 import { Dialog } from 'primereact/dialog'
+import { Chip } from 'primereact/chip'
 
 import { userState } from '../atom/userAtom'
 import { useRecoilState } from 'recoil'
@@ -15,6 +16,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/router'
 
 import { useTheme } from 'next-themes'
+import Link from 'next/link'
 
 export default function Header() {
   const [currentUser, setCurrentUser] = useRecoilState(userState)
@@ -29,6 +31,7 @@ export default function Header() {
   const [popupVisible, setPopupVisible] = useState(false)
 
   useEffect(() => {
+    console.log('%cHeader rendered', 'color:orange')
     onAuthStateChanged(auth, user => {
       if (user) {
         const fetchUser = async () => {
@@ -74,6 +77,13 @@ export default function Header() {
       label: 'Options',
       items: [
         {
+          label: 'Profile',
+          icon: 'pi pi-user',
+          command: () => {
+            router.push('/profile')
+          },
+        },
+        {
           label: 'Reset dark mode',
           icon: 'pi pi-refresh',
           command: () => {
@@ -89,6 +99,7 @@ export default function Header() {
         },
       ],
     },
+
     // {
     //   label: 'Navigate',
     //   items: [
@@ -136,21 +147,29 @@ export default function Header() {
     <div className="max-w-7xl xl:mx-auto px-5">
       <div className="flex items-center justify-between ">
         <div className="cursor-pointer h-24 w-44 lg:w-52 relative ">
-          <Image
-            src={`${resolvedTheme === 'dark' ? '/fitness tracker logo white.svg' : '/fitness tracker logo.svg'}`}
-            layout="fill"
-            className="object-contain"
-          />
+          <Link href="/">
+            <a>
+              <Image
+                src={`${resolvedTheme === 'dark' ? '/fitness tracker logo white.svg' : '/fitness tracker logo.svg'}`}
+                layout="fill"
+                className="object-contain"
+              />
+            </a>
+          </Link>
         </div>
 
         <div className="flex items-center">
           {currentUser ? (
             <>
+              <Chip
+                label={currentUser.name}
+                image={currentUser.customProfileImg ? currentUser.customProfileImg : currentUser.userImg}
+                className="hidden md:inline-flex"
+              />
               <img
-                src={currentUser.userImg}
+                src={currentUser.customProfileImg ? currentUser.customProfileImg : currentUser.userImg}
                 alt="user-image"
-                className="h-9 rounded-full cursor-pointer"
-                onClick={onSignOut}
+                className="h-9 rounded-full cursor-pointer md:hidden"
               />
               <DarkModeSwitch
                 className="ml-3"
@@ -177,14 +196,11 @@ export default function Header() {
             <>
               <button onClick={displayPopup}>Sign in</button>
               <Dialog
-                // header="Header"
                 visible={popupVisible}
                 style={{ width: '400px' }}
                 onHide={displayPopup}
                 draggable={false}
                 headerClassName="login-popup-header"
-                // breakpoints={{ '960px': '100vw', '640px': '100vw' }}
-                // style={{ width: '50vw' }}
               >
                 <div className="text-center">
                   <Image
