@@ -12,30 +12,47 @@ import { userState } from '../atom/userAtom'
 
 const BodyCompositionForm = () => {
   const [currentUser] = useRecoilState(userState)
+
   const [recordDate, setRecordDate] = useState()
   const [weight, setWeight] = useState()
-  const [bmi, setBMI] = useState()
   const [fatPercentage, setFatPercentage] = useState()
   const [waterPercentage, setWaterPercentage] = useState()
+  const [musclesKg, setMusclesKg] = useState()
+  const [classification, setClassification] = useState()
+  const [bones, setBones] = useState()
+  const [dailyKCal, setDailyKCal] = useState()
+  const [age, setAge] = useState()
+  const [bellyFat, setBellyFat] = useState()
+
   const toast = useRef(null)
 
   async function submitFormData(e) {
     e.preventDefault()
     try {
       await addDoc(collection(db, 'records'), {
-        recordDate: recordDate,
-        weight: weight,
-        bmi: bmi,
-        fatPercentage: fatPercentage,
-        waterPercentage: waterPercentage,
+        recordDate,
+        weight,
+        musclesKg,
+        fatPercentage,
+        waterPercentage,
+        classification,
+        bones,
+        dailyKCal,
+        age,
+        bellyFat,
         username: currentUser.username,
       })
 
       setRecordDate(null)
       setWeight(null)
-      setBMI(null)
       setFatPercentage(null)
       setWaterPercentage(null)
+      setMusclesKg(null)
+      setClassification(null)
+      setBones(null)
+      setDailyKCal(null)
+      setAge(null)
+      setBellyFat(null)
       showSuccess()
     } catch (e) {
       console.log(e)
@@ -79,18 +96,6 @@ const BodyCompositionForm = () => {
               />
               <label htmlFor="weight">Weight (kg)</label>
             </div>
-            <div className="p-float-label w-full md:w-1/5">
-              <InputNumber
-                className="w-full"
-                id="bmi"
-                minFractionDigits={1}
-                maxFractionDigits={1}
-                value={bmi}
-                onChange={e => setBMI(e.value)}
-                required
-              />
-              <label htmlFor="bmi">BMI</label>
-            </div>
 
             <div className="p-float-label  w-full md:w-1/5">
               <InputNumber
@@ -118,6 +123,85 @@ const BodyCompositionForm = () => {
                 required
               />
               <label htmlFor="water_percentage">Water %</label>
+            </div>
+            <div className="p-float-label w-full md:w-1/5">
+              <InputNumber
+                className="w-full"
+                id="musclesKg"
+                minFractionDigits={1}
+                maxFractionDigits={1}
+                value={musclesKg}
+                onChange={e => setMusclesKg(e.value)}
+                required
+              />
+              <label htmlFor="musclesKg">Muscles (Kg)</label>
+            </div>
+          </div>
+          {/* second row */}
+          <div className="flex gap-2 flex-wrap md:flex-nowrap p-fluid mt-2">
+            <div className="p-float-label w-full md:w-1/5">
+              <InputNumber
+                className="w-full"
+                id="classification"
+                minFractionDigits={0}
+                maxFractionDigits={0}
+                value={classification}
+                onChange={e => setClassification(e.value)}
+                required
+              />
+              <label htmlFor="classification">CLASS</label>
+            </div>
+            <div className="p-float-label w-full md:w-1/5">
+              <InputNumber
+                className="w-full"
+                id="bones"
+                minFractionDigits={1}
+                maxFractionDigits={1}
+                suffix=" kg"
+                value={bones}
+                onChange={e => setBones(e.value)}
+                required
+              />
+              <label htmlFor="bones">Bones (kg)</label>
+            </div>
+            <div className="p-float-label w-full md:w-1/5">
+              <InputNumber
+                className="w-full"
+                id="dailyKCal"
+                minFractionDigits={0}
+                maxFractionDigits={0}
+                value={dailyKCal}
+                onChange={e => setDailyKCal(e.value)}
+                required
+              />
+              <label htmlFor="dailyKCal">Daily KCal</label>
+            </div>
+
+            <div className="p-float-label  w-full md:w-1/5">
+              <InputNumber
+                className="w-full"
+                id="age"
+                minFractionDigits={0}
+                maxFractionDigits={0}
+                value={age}
+                onChange={e => setAge(e.value)}
+                required
+              />
+              <label htmlFor="age">Age</label>
+            </div>
+
+            <div className="p-float-label  w-full md:w-1/5">
+              <InputNumber
+                className="w-full"
+                id="bellyFat"
+                minFractionDigits={1}
+                maxFractionDigits={1}
+                suffix=" %"
+                value={bellyFat}
+                onChange={e => setBellyFat(e.value)}
+                required
+              />
+              <label htmlFor="bellyFat">Belly fat</label>
             </div>
             <div className="w-full md:w-1/5">
               <Button

@@ -38,7 +38,11 @@ const FitnessDataTable = ({ demoRecords }) => {
         //build an alternative array chaining ids and data
         _records = recordsData.map((record, i) => {
           // return { ...record, id: ids[i], recordDate: record.recordDate.toDate().toLocaleDateString('en-US') }
-          return { ...record, id: ids[i] }
+          return {
+            ...record,
+            id: ids[i],
+            bmi: (record.weight / ((currentUser.height * currentUser.height) / 10000)).toFixed(1),
+          }
         })
         setRecords(_records)
       })
@@ -63,6 +67,12 @@ const FitnessDataTable = ({ demoRecords }) => {
     { field: 'bmi', header: 'BMI' },
     { field: 'fatPercentage', header: 'Fat %' },
     { field: 'waterPercentage', header: 'Water %' },
+    { field: 'musclesKg', header: 'Muscles' },
+    { field: 'classification', header: 'CLASS' },
+    { field: 'bones', header: 'Bones' },
+    { field: 'dailyKCal', header: 'Daily Kcal' },
+    { field: 'age', header: 'Age eq' },
+    { field: 'bellyFat', header: 'Belly Fat' },
   ]
 
   const dynamicColumns = columns.map((col, i) => {
