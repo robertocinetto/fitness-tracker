@@ -2,9 +2,11 @@ import { DataTable } from 'primereact/datatable'
 import { Column } from 'primereact/column'
 import { Button } from 'primereact/button'
 import { Toast } from 'primereact/toast'
+import { InputText } from 'primereact/inputtext'
+import { InputNumber } from 'primereact/inputnumber'
 
 import { useEffect, useRef, useState } from 'react'
-import { collection, onSnapshot, query, where, deleteDoc, doc, orderBy, Timestamp, addDoc } from 'firebase/firestore'
+import { collection, onSnapshot, query, where, deleteDoc, doc, orderBy, Timestamp, addDoc, updateDoc } from 'firebase/firestore'
 import { db } from '../firebase'
 
 import { useRecoilState } from 'recoil'
@@ -61,39 +63,9 @@ const FitnessDataTable = ({ demoRecords }) => {
     }
   }, [currentUser])
 
-  const columns = [
-    // { field: 'recordDate', header: 'Date' },
-    { field: 'weight', header: 'Weight' },
-    { field: 'bmi', header: 'BMI' },
-    { field: 'fatPercentage', header: 'Fat %' },
-    { field: 'waterPercentage', header: 'Water %' },
-    { field: 'musclesKg', header: 'Muscles' },
-    { field: 'classification', header: 'CLASS' },
-    { field: 'bones', header: 'Bones' },
-    { field: 'dailyKCal', header: 'Daily Kcal' },
-    { field: 'age', header: 'Age eq' },
-    { field: 'bellyFat', header: 'Belly Fat' },
-  ]
-
-  const dynamicColumns = columns.map((col, i) => {
-    return (
-      <Column
-        key={col.field}
-        field={col.field}
-        header={col.header}
-        sortable
-      />
-    )
-  })
-
   const actionBodyTemplate = rowData => {
     return (
       <>
-        {/* <Button
-          icon="pi pi-pencil"
-          className="p-button-rounded p-button-success mr-2"
-          onClick={() => editProduct(rowData)}
-        /> */}
         <Button
           icon="pi pi-trash"
           className="p-button-rounded p-button-warning"
@@ -126,15 +98,75 @@ const FitnessDataTable = ({ demoRecords }) => {
     toast.current.show({ severity: 'info', summary: 'Deleted', detail: 'Entry has been deleted', life: 3000 })
   }
 
+  const showSuccess = () => {
+    toast.current.show({ severity: 'success', summary: 'Confirmed!', detail: 'Your new entry has been added successfully', life: 3000 })
+  }
+
+  const numberEditorKg = options => {
+    return (
+      <InputNumber
+        minFractionDigits={1}
+        maxFractionDigits={1}
+        suffix=" kg"
+        value={options.value}
+        onChange={e => options.editorCallback(e.value)}
+      />
+    )
+  }
+
+  const numberEditorPercentage = options => {
+    return (
+      <InputNumber
+        minFractionDigits={1}
+        maxFractionDigits={1}
+        suffix=" %"
+        value={options.value}
+        onChange={e => options.editorCallback(e.value)}
+      />
+    )
+  }
+
+  const numberEditor = options => {
+    return (
+      <InputNumber
+        minFractionDigits={1}
+        maxFractionDigits={1}
+        value={options.value}
+        onChange={e => options.editorCallback(e.value)}
+      />
+    )
+  }
+
+  const onRowEditComplete = async e => {
+    let { newData } = e
+    console.log(newData)
+    await updateDoc(doc(db, 'records', newData.id), {
+      // recordDate,
+      weight: newData.weight,
+      musclesKg: newData.musclesKg,
+      fatPercentage: newData.fatPercentage,
+      waterPercentage: newData.waterPercentage,
+      classification: newData.classification,
+      bones: newData.bones,
+      dailyKCal: newData.dailyKCal,
+      age: newData.age,
+      bellyFat: newData.bellyFat,
+    }).then(showSuccess())
+  }
+
   return (
     <>
       <Toast ref={toast} />
       <DataTable
+        className="data-table"
         size="small"
         value={records}
         sortField="recordDate"
         sortOrder={-1}
         responsiveLayout="scroll"
+        editMode="row"
+        onRowEditComplete={onRowEditComplete}
+        dataKey="id"
       >
         <Column
           field="recordDate"
@@ -143,7 +175,70 @@ const FitnessDataTable = ({ demoRecords }) => {
           sortable
           body={dateBodyTemplate}
         />
-        {dynamicColumns}
+        <Column
+          field="weight"
+          header="Weight"
+          sortable
+          editor={options => numberEditorKg(options)}
+        />
+        <Column
+          field="bmi"
+          header="BMI"
+          sortable
+        />
+        <Column
+          field="fatPercentage"
+          header="Fat %"
+          sortable
+          editor={options => numberEditorPercentage(options)}
+        />
+        <Column
+          field="waterPercentage"
+          header="Water %"
+          sortable
+          editor={options => numberEditorPercentage(options)}
+        />
+        <Column
+          field="musclesKg"
+          header="Muscles"
+          sortable
+          editor={options => numberEditorKg(options)}
+        />
+        <Column
+          field="classification"
+          header="CLASS"
+          sortable
+          editor={options => numberEditor(options)}
+        />
+        <Column
+          field="bones"
+          header="Bones"
+          sortable
+          editor={options => numberEditor(options)}
+        />
+        <Column
+          field="dailyKCal"
+          header="Daily KCal"
+          sortable
+          editor={options => numberEditor(options)}
+        />
+        <Column
+          field="age"
+          header="Age eq"
+          sortable
+          editor={options => numberEditor(options)}
+        />
+        <Column
+          field="bellyFat"
+          header="Belly Fat"
+          sortable
+          editor={options => numberEditor(options)}
+        />
+        <Column
+          rowEditor
+          headerStyle={{ width: '10%', minWidth: '8rem' }}
+          bodyStyle={{ textAlign: 'center' }}
+        ></Column>
         <Column
           body={actionBodyTemplate}
           exportable={false}
