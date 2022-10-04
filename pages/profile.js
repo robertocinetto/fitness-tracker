@@ -111,7 +111,6 @@ const Profile = () => {
                     onChange={e => setBirthDate(Timestamp.fromDate(e.value))}
                     dateFormat="dd/mm/yy"
                     touchUI
-                    required
                     readOnlyInput
                   />
 
@@ -124,7 +123,6 @@ const Profile = () => {
                     suffix=" cm"
                     value={height}
                     onChange={e => setHeight(e.value)}
-                    required
                   />
                   <label htmlFor="height">Height (cm)</label>
                 </div>
