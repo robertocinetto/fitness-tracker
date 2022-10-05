@@ -5,6 +5,7 @@ import { Toast } from 'primereact/toast'
 import { InputText } from 'primereact/inputtext'
 import { InputNumber } from 'primereact/inputnumber'
 import { MultiSelect } from 'primereact/multiselect'
+import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog'
 
 import { useEffect, useRef, useState } from 'react'
 import { collection, onSnapshot, query, where, deleteDoc, doc, orderBy, Timestamp, addDoc, updateDoc } from 'firebase/firestore'
@@ -18,6 +19,7 @@ const FitnessDataTable = ({ demoRecords }) => {
   const [currentUser, setCurrentUser] = useRecoilState(userState)
   const [records, setRecords] = useRecoilState(recordsState)
   const toast = useRef(null)
+  const [rowToBeDelete, setRowToBeDelete] = useState()
 
   const columns = [
     { field: 'weight', header: 'Weight', editor: 'kg' },
@@ -111,20 +113,38 @@ const FitnessDataTable = ({ demoRecords }) => {
     return (
       <>
         <Button
-          icon="pi pi-trash"
-          className="p-button-rounded p-button-warning"
-          onClick={() => confirmDeleteProduct(rowData)}
+          icon="pi pi-times"
+          className="p-button-rounded p-button-danger p-button-text"
+          onClick={() => confirmRowDelete(rowData)}
         />
       </>
     )
   }
 
-  const confirmDeleteProduct = async rowData => {
+  // const confirmRowDelete = rowData => {
+  //   confirmDialog({
+  //     message: 'Are you sure you want to delete this entry?',
+  //     header: 'Delete Confirmation',
+  //     icon: 'pi pi-info-circle',
+  //     acceptClassName: 'p-button-danger',
+  //     accept: rowData => confirmDeleteProduct(rowData),
+  //   })
+  // }
+
+  function confirmRowDelete(rowData) {
+    setRowToBeDelete(rowData)
+    confirmDialog({
+      message: 'Are you sure you want to proceed?',
+      header: 'Confirmation',
+      icon: 'pi pi-exclamation-triangle',
+      accept: () => confirmDeleteProduct(),
+    })
+  }
+
+  const confirmDeleteProduct = async () => {
     try {
-      await deleteDoc(doc(db, 'records', rowData.id)).then(showSuccessDeletion())
-    } catch (error) {
-      console.log(error)
-    }
+      await deleteDoc(doc(db, 'records', rowToBeDelete.id)).then(showSuccessDeletion())
+    } catch (error) {}
   }
 
   const dateBodyTemplate = rowData => {
@@ -209,6 +229,8 @@ const FitnessDataTable = ({ demoRecords }) => {
   return (
     <>
       <Toast ref={toast} />
+      <ConfirmDialog />
+
       <DataTable
         className="data-table"
         size="small"
@@ -231,7 +253,7 @@ const FitnessDataTable = ({ demoRecords }) => {
         {columnComponents}
         <Column
           rowEditor
-          headerStyle={{ width: '10%', minWidth: '8rem' }}
+          // headerStyle={{ width: '10%', minWidth: '8rem' }}
           bodyStyle={{ textAlign: 'center' }}
         ></Column>
         <Column
